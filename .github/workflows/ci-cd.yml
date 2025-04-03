@@ -17,12 +17,12 @@ jobs:
 
     - name: Build and Push Docker Images
       run: |
-        docker build -t ${{ talk2harish/fsk-harish }}/nginx-custom:latest ./frontend
-        docker build -t ${{ talk2harish/fsk-harish }}/php-fpm-custom:latest ./backend
-        docker build -t ${{ talk2harish/fsk-harish }}/mysql-custom:latest ./database
-        docker push ${{ talk2harish/fsk-harish }}/nginx-custom:latest
-        docker push ${{ talk2harish/fsk-harish }}/php-fpm-custom:latest
-        docker push ${{ talk2harish/fsk-harish }}/mysql-custom:latest
+        docker build -t ${{ talk2harishsingh@gmail.com }}/nginx-custom:latest ./frontend
+        docker build -t ${{ talk2harishsingh@gmail.com }}/php-fpm-custom:latest ./backend
+        docker build -t ${{ talk2harishsingh@gmail.com }}/mysql-custom:latest ./database
+        docker push ${{ talk2harishsingh@gmail.com }}/nginx-custom:latest
+        docker push ${{ talk2harishsingh@gmail.com }}/php-fpm-custom:latest
+        docker push ${{ talk2harishsingh@gmail.com }}/mysql-custom:latest
 
     - name: Configure Kubernetes
       run: |
