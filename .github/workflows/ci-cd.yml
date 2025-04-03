@@ -18,12 +18,12 @@ jobs:
         docker build -t mysql-custom ./database
     - name: Push Docker images
       run: |
-        docker tag nginx-custom talk2harish/nginx-custom:latest
-        docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
-        docker tag mysql-custom talk2harish/mysql-custom:latest
-        docker push talk2harish/nginx-custom:latest
-        docker push talk2harish/php-fpm-custom:latest
-        docker push talk2harish/mysql-custom:latest
+        docker tag nginx-custom talk2harish/fsk-harish/nginx-custom:latest
+        docker tag php-fpm-custom talk2harish/fsk-harish/php-fpm-custom:latest
+        docker tag mysql-custom talk2harish/fsk-harish/mysql-custom:latest
+        docker push talk2harish/fsk-harish/nginx-custom:latest
+        docker push talk2harish/fsk-harish/php-fpm-custom:latest
+        docker push talk2harish/fsk-harish/mysql-custom:latest
     - name: Apply Kubernetes Configuration
       run: |
         kubectl apply -f k8s/
