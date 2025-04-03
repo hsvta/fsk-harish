@@ -1,0 +1,27 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Build Docker images
+      run: |
+        docker build -t nginx-custom ./frontend
+        docker build -t php-fpm-custom ./backend
+        docker build -t mysql-custom ./database
+    - name: Push Docker images
+      run: |
+        docker tag nginx-custom talk2harish/nginx-custom:latest
+        docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
+        docker tag mysql-custom talk2harish/mysql-custom:latest
+        docker push talk2harish/nginx-custom:latest
+        docker push talk2harish/php-fpm-custom:latest
+        docker push talk2harish/mysql-custom:latest
+    - name: Apply Kubernetes Configuration
+      run: |
+        kubectl apply -f k8s/
