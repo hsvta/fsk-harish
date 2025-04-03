@@ -9,6 +9,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+    - name: Log in to Docker Hub
+      run: echo "${{ Va@Ta@2310 }}" | docker login -u "${{ talk2harishsingh@gmail.com }}" --password-stdin
     - name: Build Docker images
       run: |
         docker build -t nginx-custom ./frontend
