@@ -25,6 +25,8 @@ jobs:
         docker push talk2harish/nginx-custom:latest
         docker push talk2harish/php-fpm-custom:latest
         docker push talk2harish/mysql-custom:latest
-    - name: Apply Kubernetes Configuration
+    - name: Configure Kubernetes
       run: |
+        echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+        export KUBECONFIG=kubeconfig.yaml
         kubectl apply -f k8s/
