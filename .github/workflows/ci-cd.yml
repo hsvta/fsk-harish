@@ -41,13 +41,13 @@ jobs:
     - name: Apply Kubernetes manifests
       run: |
         kubectl apply -f k8s/
-    - name: Start Minikube
-      run: |
-        minikube start --driver=docker
-        minikube update-context
+    #- name: Start Minikube
+     # run: |
+      #  minikube start --driver=docker
+       # minikube update-context
     
     - name: Configure Kubernetes
       run: |
         echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
         export KUBECONFIG=kubeconfig.yaml
-        kubectl apply -f k8s/
+        #kubectl apply -f k8s/
