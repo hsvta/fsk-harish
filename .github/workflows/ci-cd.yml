@@ -29,9 +29,10 @@ jobs:
         run: |
           minikube start --driver=docker
           minikube update-context
-
-      - name: Configure Kubernetes
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
-          export KUBECONFIG=kubeconfig.yaml
           kubectl apply -f k8s/
+
+      #- name: Configure Kubernetes
+       # run: |
+        #  echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+         # export KUBECONFIG=kubeconfig.yaml
+          #kubectl apply -f k8s/
