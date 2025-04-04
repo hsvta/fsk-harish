@@ -7,47 +7,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Login to Docker Hub
-      run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin  
-    - name: Build Docker images
-      run: |
-        docker build -t nginx-custom ./frontend
-        docker build -t php-fpm-custom ./backend
-        docker build -t mysql-custom ./database
-    - name: Push Docker images
-      run: |
-        docker tag nginx-custom talk2harish/nginx-custom:latest
-        docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
-        docker tag mysql-custom talk2harish/mysql-custom:latest
-        docker push talk2harish/nginx-custom:latest
-        docker push talk2harish/php-fpm-custom:latest
-        docker push talk2harish/mysql-custom:latest
-   - name: Start Minikube
-     run: |
-     # Install Minikube
-       curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-       sudo install minikube-linux-amd64 /usr/local/bin/minikube
-    
-    # Start Minikube cluster
-       minikube start --driver=docker
-    
-    # Verify cluster
-       kubectl cluster-info
-       kubectl get nodes
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      - name: Build Docker images
+        run: |
+          docker build -t nginx-custom ./frontend
+          docker build -t php-fpm-custom ./backend
+          docker build -t mysql-custom ./database
+      - name: Push Docker images
+        run: |
+          docker tag nginx-custom talk2harish/nginx-custom:latest
+          docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
+          docker tag mysql-custom talk2harish/mysql-custom:latest
+          docker push talk2harish/nginx-custom:latest
+          docker push talk2harish/php-fpm-custom:latest
+          docker push talk2harish/mysql-custom:latest
+      - name: Start Minikube
+        run: |
+          minikube start --driver=docker
+          minikube update-context
 
-    - name: Apply Kubernetes manifests
-      run: |
-        kubectl apply -f k8s/
-    #- name: Start Minikube
-     # run: |
-      #  minikube start --driver=docker
-       # minikube update-context
-    
-    - name: Configure Kubernetes
-      run: |
-        echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
-        export KUBECONFIG=kubeconfig.yaml
-        #kubectl apply -f k8s/
+      - name: Configure Kubernetes
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+          export KUBECONFIG=kubeconfig.yaml
+          kubectl apply -f k8s/
