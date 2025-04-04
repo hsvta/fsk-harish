@@ -30,6 +30,20 @@ jobs:
           minikube start --driver=docker
           minikube update-context
           kubectl apply -f k8s/
+<<<<<<< HEAD
+=======
+          kubectl rollout restart deployment nginx-deployment
+          kubectl rollout restart deployment php-fpm-deployment
+          kubectl rollout restart deployment mysql-deployment
+      #- name: Deploy to Kubernetes
+        #run: |
+          #echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
+          #export KUBECONFIG=kubeconfig.yaml
+          #kubectl apply -f k8s/
+          #kubectl rollout restart deployment nginx-deployment
+          #kubectl rollout restart deployment php-fpm-deployment
+          #kubectl rollout restart deployment mysql-deployment
+>>>>>>> 1143cbc815b9c4775c89f7357df9d25f7f5e9357
       #- name: Configure Kubernetes
         #run: |
           #echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
@@ -39,4 +53,12 @@ jobs:
         run: |
           echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
           export KUBECONFIG=kubeconfig.yaml
+<<<<<<< HEAD
           #kubectl apply -f k8s/
+=======
+          #kubectl apply -f k8s/
+
+
+
+
+>>>>>>> 1143cbc815b9c4775c89f7357df9d25f7f5e9357
