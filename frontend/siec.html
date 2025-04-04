@@ -6,7 +6,30 @@
     <title>My Simple Harish Website</title>
 </head>
 <body>
-    <h1>Welcome to My SIEC education pvt LTD Website!</h1>
-    <p>This website is powered by Nginx, PHP-FPM, and MySQL running in Kubernetes.</p>
+    <h1>docker build -t nginx-custom ./frontend
+        docker build -t php-fpm-custom ./backend
+        docker build -t mysql-custom ./database
+        docker tag nginx-custom talk2harish/nginx-custom:latest
+        docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
+        docker tag mysql-custom talk2harish/mysql-custom:latest
+        docker push talk2harish/nginx-custom:latest
+        docker push talk2harish/php-fpm-custom:latest
+        docker push talk2harish/mysql-custom:latest
+        minikube start
+        kubectl cluster-info
+        kubectl apply -f k8s/
+        kubectl get deployment
+        kubectl get pods
+        kubectl get svc
+        minikube service nginx-service --url
+        minikube service nginx-service
+        git add .
+        git commit -m "push all done code"
+        git push origin main
+        kubectl scale deployment nginx-deployment --replicas=5
+        kubectl scale deployment php-deployment --replicas=5
+        kubectl scale deployment mysql-deployment --replicas=5
+        </h1>
+    <p>All Commands For Kubernet.</p>
 </body>
 </html>
