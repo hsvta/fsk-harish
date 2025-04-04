@@ -31,8 +31,8 @@ jobs:
           minikube update-context
           kubectl apply -f k8s/
 
-      #- name: Configure Kubernetes
-       # run: |
-        #  echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
-         # export KUBECONFIG=kubeconfig.yaml
+      - name: Configure Kubernetes
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+          export KUBECONFIG=kubeconfig.yaml
           #kubectl apply -f k8s/
