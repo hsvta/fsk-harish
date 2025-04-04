@@ -40,3 +40,9 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
           export KUBECONFIG=kubeconfig.yaml
           #kubectl apply -f k8s/
+      - name: Restart Deployments on Update
+        run: |
+          kubectl rollout restart deployment nginx-deployment
+          kubectl rollout restart deployment php-fpm-deployment
+          kubectl rollout restart deployment mysql-deployment
+        
