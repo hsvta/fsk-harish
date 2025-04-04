@@ -25,6 +25,22 @@ jobs:
         docker push talk2harish/nginx-custom:latest
         docker push talk2harish/php-fpm-custom:latest
         docker push talk2harish/mysql-custom:latest
+   - name: Start Minikube
+     run: |
+     # Install Minikube
+       curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+       sudo install minikube-linux-amd64 /usr/local/bin/minikube
+    
+    # Start Minikube cluster
+       minikube start --driver=docker
+    
+    # Verify cluster
+       kubectl cluster-info
+       kubectl get nodes
+
+    - name: Apply Kubernetes manifests
+      run: |
+        kubectl apply -f k8s/
     - name: Start Minikube
       run: |
         minikube start --driver=docker
