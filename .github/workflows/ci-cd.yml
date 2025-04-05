@@ -35,19 +35,30 @@ jobs:
         #export KUBECONFIG=kubeconfig.yaml
         #kubectl apply -f k8s/
       #- name: Configure Kubernetes
-      - name: Configure Kubernetes
+      - name: Setup kubeconfig
         run: |
-          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
-          export KUBECONFIG=kubeconfig.yaml
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
+          export KUBECONFIG=$PWD/kubeconfig.yaml
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/
+          kubectl rollout restart deployment nginx-deployment
+          kubectl rollout restart deployment php-fpm-deployment
+          kubectl rollout restart deployment mysql-deployment
+      #- name: Configure Kubernetes
+        #run: |
+          #echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+          #export KUBECONFIG=kubeconfig.yaml
           #kubectl apply -f k8s/
       - name: Scale Deployments
         run: |
           kubectl scale deployment nginx-deployment --replicas=3
           kubectl scale deployment php-deployment --replicas=3
           kubectl scale deployment mysql-deployment --replicas=3
-      - name: Restart Deployments on Update
-        run: |
-          kubectl rollout restart deployment nginx-deployment
-          kubectl rollout restart deployment php-deployment
-          kubectl rollout restart deployment mysql-deployment
+      #- name: Restart Deployments on Update
+        #run: |
+          #kubectl rollout restart deployment nginx-deployment
+          #kubectl rollout restart deployment php-deployment
+          #kubectl rollout restart deployment mysql-deployment
         
