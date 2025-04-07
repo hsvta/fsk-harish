@@ -42,6 +42,7 @@ jobs:
           kubectl rollout restart deployment nginx-deployment
           kubectl rollout restart deployment php-deployment
           kubectl rollout restart deployment mysql-deployment
+          
       - name: Confirm Deployments
         run: |
           kubectl get pods -o wide
