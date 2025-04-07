@@ -25,11 +25,11 @@ jobs:
           docker push talk2harish/nginx-custom:latest
           docker push talk2harish/php-fpm-custom:latest
           docker push talk2harish/mysql-custom:latest
-      #- name: Start Minikube
-        #run: |
-          #minikube start --driver=docker
-          #minikube update-context
-          #kubectl apply -f k8s/
+      - name: Start Minikube
+        run: |
+          minikube start --driver=docker
+          minikube update-context
+          kubectl apply -f k8s/
       
       - name: Setup kubeconfig
         run: |
