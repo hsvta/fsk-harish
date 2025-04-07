@@ -25,16 +25,12 @@ jobs:
           docker push talk2harish/nginx-custom:latest
           docker push talk2harish/php-fpm-custom:latest
           docker push talk2harish/mysql-custom:latest
-      - name: Start Minikube
-        run: |
-          minikube start --driver=docker
-          minikube update-context
-          #kubectl apply -f k8s/
+      #- name: Start Minikube
         #run: |
-        #echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
-        #export KUBECONFIG=kubeconfig.yaml
-        #kubectl apply -f k8s/
-      #- name: Configure Kubernetes
+          #minikube start --driver=docker
+          #minikube update-context
+          #kubectl apply -f k8s/
+      
       - name: Setup kubeconfig
         run: |
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
@@ -46,11 +42,11 @@ jobs:
           kubectl rollout restart deployment nginx-deployment
           kubectl rollout restart deployment php-deployment
           kubectl rollout restart deployment mysql-deployment
-      #- name: Configure Kubernetes
-        #run: |
-          #echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
-          #export KUBECONFIG=kubeconfig.yaml
-          #kubectl apply -f k8s/
+      - name: Confirm Deployments
+        run: |
+          kubectl get pods -o wide
+          kubectl get deployments
+      
       - name: Scale Deployments
         run: |
           kubectl scale deployment nginx-deployment --replicas=3
