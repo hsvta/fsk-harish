@@ -37,6 +37,8 @@ jobs:
           export KUBECONFIG=$PWD/kubeconfig.yaml
 
       - name: Deploy to Kubernetes
+        env:
+          KUBECONFIG: kubeconfig.yaml
         run: |
           kubectl apply -f k8s/
           kubectl rollout restart deployment nginx-deployment
