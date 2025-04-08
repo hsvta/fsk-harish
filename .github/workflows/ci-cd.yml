@@ -39,9 +39,9 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/
-          kubectl rollout restart deployment nginx-deployment || true
-          kubectl rollout restart deployment php-deployment || true
-          kubectl rollout restart deployment mysql-deployment || true
+          kubectl rollout restart deployment nginx-deployment
+          kubectl rollout restart deployment php-deployment
+          kubectl rollout restart deployment mysql-deployment
 
       - name: Check Deployments
         run: |
