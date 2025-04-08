@@ -1,138 +1,62 @@
-name: CI/CD Pipeline for fsk-harish
-
+name: CI/CD Pipeline
 on:
   push:
     branches:
       - main
-
-env:
-  NAMESPACE: fsk-harish
-  DEPLOY_PATH: k8s/
-
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v2
-
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-      - name: Build Docker Images
         run: |
-          docker build -t talk2harish/nginx-custom:latest ./frontend
-          docker build -t talk2harish/php-fpm-custom:latest ./backend
-          docker build -t talk2harish/mysql-custom:latest ./database
-
-      - name: Push Docker Images
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      - name: Build Docker images
         run: |
+          docker build -t nginx-custom ./frontend
+          docker build -t php-fpm-custom ./backend
+          docker build -t mysql-custom ./database
+      - name: Push Docker images
+        run: |
+          docker tag nginx-custom talk2harish/nginx-custom:latest
+          docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
+          docker tag mysql-custom talk2harish/mysql-custom:latest
           docker push talk2harish/nginx-custom:latest
           docker push talk2harish/php-fpm-custom:latest
           docker push talk2harish/mysql-custom:latest
-
+      - name: Start Minikube
+        run: |
+          minikube start --driver=docker
+          minikube update-context
+          kubectl apply -f k8s/
+      
       - name: Setup kubeconfig
         run: |
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
           export KUBECONFIG=$PWD/kubeconfig.yaml
 
-      - name: Create Namespace (if not exists)
-        run: |
-          kubectl get ns $NAMESPACE || kubectl create namespace $NAMESPACE
-
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -n $NAMESPACE -f $DEPLOY_PATH
+           kubectl apply -f k8s/
+           kubectl rollout restart deployment nginx-deployment
+           kubectl rollout restart deployment php-deployment
+           kubectl rollout restart deployment mysql-deployment
 
-      - name: Restart Deployments
+
+      - name: Confirm Deployments
         run: |
-          kubectl rollout restart deployment nginx-deployment -n $NAMESPACE
-          kubectl rollout restart deployment php-deployment -n $NAMESPACE
-          kubectl rollout restart deployment mysql-deployment -n $NAMESPACE
-
-      - name: Setup HPA for Auto-Scaling
-        run: |
-          kubectl autoscale deployment nginx-deployment -n $NAMESPACE --cpu-percent=50 --min=1 --max=5
-          kubectl autoscale deployment php-deployment -n $NAMESPACE --cpu-percent=50 --min=1 --max=5
-          kubectl autoscale deployment mysql-deployment -n $NAMESPACE --cpu-percent=50 --min=1 --max=5
-
-      - name: Show Deployments & Pods
-        run: |
-          kubectl get deployments -n $NAMESPACE
-          kubectl get pods -o wide -n $NAMESPACE
-
-      - name: Slack Notification (optional)
-        if: always()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": ":rocket: Deployment complete for *fsk-harish* project to *$NAMESPACE* namespace!"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-
-#name: CI/CD Pipeline
-#on:
-#  push:
-#    branches:
-#      - main
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v2
-#      - name: Login to Docker Hub
-#        run: |
-#          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-#      - name: Build Docker images
-#        run: |
-#          docker build -t nginx-custom ./frontend
-#          docker build -t php-fpm-custom ./backend
-#          docker build -t mysql-custom ./database
-#      - name: Push Docker images
-#        run: |
-#          docker tag nginx-custom talk2harish/nginx-custom:latest
-#          docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
-#          docker tag mysql-custom talk2harish/mysql-custom:latest
-#          docker push talk2harish/nginx-custom:latest
-#          docker push talk2harish/php-fpm-custom:latest
-#          docker push talk2harish/mysql-custom:latest
-#      - name: Start Minikube
-#        run: |
-#          minikube start --driver=docker
-#          minikube update-context
-#          kubectl apply -f k8s/
-#      
-#      - name: Setup kubeconfig
-#        run: |
-#          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
-#          export KUBECONFIG=$PWD/kubeconfig.yaml
-#
-#      - name: Deploy to Kubernetes
-#        run: |
-#           kubectl apply -f k8s/
-#           kubectl rollout restart deployment nginx-deployment
-#           kubectl rollout restart deployment php-deployment
-#           kubectl rollout restart deployment mysql-deployment
-#
-#
-#      - name: Confirm Deployments
-#        run: |
-#           kubectl get pods -o wide
-#           kubectl get deployments
-#      
-#      #- name: Scale Deployments
-#        #run: |
-#           #kubectl scale deployment nginx-deployment --replicas=3
-#           #kubectl scale deployment php-deployment --replicas=3
-#           #kubectl scale deployment mysql-deployment --replicas=3
-#      #- name: Restart Deployments on Update
-#        #run: |
-#          #kubectl rollout restart deployment nginx-deployment
-#          #kubectl rollout restart deployment php-deployment
-#          #kubectl rollout restart deployment mysql-deployment
+           kubectl get pods -o wide
+           kubectl get deployments
+      
+      #- name: Scale Deployments
+        #run: |
+           #kubectl scale deployment nginx-deployment --replicas=3
+           #kubectl scale deployment php-deployment --replicas=3
+           #kubectl scale deployment mysql-deployment --replicas=3
+      #- name: Restart Deployments on Update
+        #run: |
+          #kubectl rollout restart deployment nginx-deployment
+          #kubectl rollout restart deployment php-deployment
+          #kubectl rollout restart deployment mysql-deployment
         
