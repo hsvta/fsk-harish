@@ -35,15 +35,18 @@ jobs:
         run: |
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
           export KUBECONFIG=$PWD/kubeconfig.yaml
-
+      - name: Start Minikube
+        run: |
+          minikube start --driver=docker
+          minikube update-context
       - name: Deploy to Kubernetes
         env:
           KUBECONFIG: kubeconfig.yaml
         run: |
           kubectl apply -f k8s/
-          kubectl rollout restart deployment nginx-deployment
-          kubectl rollout restart deployment php-deployment
-          kubectl rollout restart deployment mysql-deployment
+          kubectl rollout restart deployment nginx-deployment || true
+          kubectl rollout restart deployment php-deployment || true
+          kubectl rollout restart deployment mysql-deployment || true
 
       - name: Check Deployments
         run: |
