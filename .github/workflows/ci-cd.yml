@@ -1,23 +1,28 @@
 name: CI/CD Pipeline
+
 on:
   push:
     branches:
       - main
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Login to Docker Hub
-        run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-      - name: Build Docker images
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build Docker Images
         run: |
           docker build -t nginx-custom ./frontend
           docker build -t php-fpm-custom ./backend
           docker build -t mysql-custom ./database
-      - name: Push Docker images
+
+      - name: Push Docker Images
         run: |
           docker tag nginx-custom talk2harish/nginx-custom:latest
           docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
@@ -25,12 +30,7 @@ jobs:
           docker push talk2harish/nginx-custom:latest
           docker push talk2harish/php-fpm-custom:latest
           docker push talk2harish/mysql-custom:latest
-      - name: Start Minikube
-        run: |
-          minikube start --driver=docker
-          minikube update-context
-          kubectl apply -f k8s/
-      
+
       - name: Setup kubeconfig
         run: |
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
@@ -38,24 +38,74 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-           kubectl apply -f k8s/
-           kubectl rollout restart deployment nginx-deployment
-           kubectl rollout restart deployment php-deployment
-           kubectl rollout restart deployment mysql-deployment
+          kubectl apply -f k8s/
+          kubectl rollout restart deployment nginx-deployment || true
+          kubectl rollout restart deployment php-deployment || true
+          kubectl rollout restart deployment mysql-deployment || true
 
-      - name: Confirm Deployments
+      - name: Check Deployments
         run: |
-           kubectl get pods -o wide
-           kubectl get deployments
-      
-      #- name: Scale Deployments
-        #run: |
-           #kubectl scale deployment nginx-deployment --replicas=3
-           #kubectl scale deployment php-deployment --replicas=3
-           #kubectl scale deployment mysql-deployment --replicas=3
-      #- name: Restart Deployments on Update
-        #run: |
-          #kubectl rollout restart deployment nginx-deployment
-          #kubectl rollout restart deployment php-deployment
-          #kubectl rollout restart deployment mysql-deployment
+          kubectl get all
+
+#name: CI/CD Pipeline
+#on:
+#  push:
+#    branches:
+#      - main
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#      - name: Login to Docker Hub
+#        run: |
+#          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+#      - name: Build Docker images
+#        run: |
+#          docker build -t nginx-custom ./frontend
+#          docker build -t php-fpm-custom ./backend
+#          docker build -t mysql-custom ./database
+#      - name: Push Docker images
+#        run: |
+#          docker tag nginx-custom talk2harish/nginx-custom:latest
+#          docker tag php-fpm-custom talk2harish/php-fpm-custom:latest
+#          docker tag mysql-custom talk2harish/mysql-custom:latest
+#          docker push talk2harish/nginx-custom:latest
+#          docker push talk2harish/php-fpm-custom:latest
+#          docker push talk2harish/mysql-custom:latest
+#      - name: Start Minikube
+#        run: |
+#          minikube start --driver=docker
+#          minikube update-context
+#          kubectl apply -f k8s/
+#      
+#      - name: Setup kubeconfig
+#        run: |
+#          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yaml
+#          export KUBECONFIG=$PWD/kubeconfig.yaml
+#
+#      - name: Deploy to Kubernetes
+#        run: |
+#           kubectl apply -f k8s/
+#           kubectl rollout restart deployment nginx-deployment
+#           kubectl rollout restart deployment php-deployment
+#           kubectl rollout restart deployment mysql-deployment
+#
+#
+#      - name: Confirm Deployments
+#        run: |
+#           kubectl get pods -o wide
+#           kubectl get deployments
+#      
+#      #- name: Scale Deployments
+#        #run: |
+#           #kubectl scale deployment nginx-deployment --replicas=3
+#           #kubectl scale deployment php-deployment --replicas=3
+#           #kubectl scale deployment mysql-deployment --replicas=3
+#      #- name: Restart Deployments on Update
+#        #run: |
+#          #kubectl rollout restart deployment nginx-deployment
+#          #kubectl rollout restart deployment php-deployment
+#          #kubectl rollout restart deployment mysql-deployment
         
