@@ -49,11 +49,11 @@ jobs:
            kubectl get pods -o wide
            kubectl get deployments
       
-      #- name: Scale Deployments
-        #run: |
-           #kubectl scale deployment nginx-deployment --replicas=3
-           #kubectl scale deployment php-deployment --replicas=3
-           #kubectl scale deployment mysql-deployment --replicas=3
+      - name: Scale Deployments
+        run: |
+           kubectl scale deployment nginx-deployment --replicas=3
+           kubectl scale deployment php-deployment --replicas=3
+           kubectl scale deployment mysql-deployment --replicas=3
       #- name: Restart Deployments on Update
         #run: |
           #kubectl rollout restart deployment nginx-deployment
