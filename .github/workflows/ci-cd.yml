@@ -51,9 +51,9 @@ jobs:
       
       - name: Scale Deployments
         run: |
-           kubectl scale deployment nginx-deployment --replicas=3
-           kubectl scale deployment php-deployment --replicas=3
-           kubectl scale deployment mysql-deployment --replicas=3
+           kubectl scale deployment nginx-deployment --replicas=5
+           kubectl scale deployment php-deployment --replicas=5
+           kubectl scale deployment mysql-deployment --replicas=5
       #- name: Restart Deployments on Update
         #run: |
           #kubectl rollout restart deployment nginx-deployment
